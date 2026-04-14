@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "motion-generator"
+version = "0.1.0"
+description = "Humanoid motion / gait generation"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["motion_generator"]
