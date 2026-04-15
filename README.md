@@ -34,6 +34,12 @@ Or run replay **without** the OpenGL window using `--no-viewer` (see below).
 
 ## Scripts
 
+Some PlaCo wheels ship native libraries under `site-packages/cmeel.prefix/lib`. If the loader fails to find them (missing `.so` / import errors), prepend that directory to `LD_LIBRARY_PATH`. Replace the path with your Conda env name and Python version as needed.
+
+```bash
+export LD_LIBRARY_PATH="/home/csi/anaconda3/envs/env_placo/lib/python3.10/site-packages/cmeel.prefix/lib:${LD_LIBRARY_PATH:-}"
+```
+
 Run these from the **repository root** (`motion_generator/`) unless you adjust paths.
 
 ### `scripts/main.py` — batch gait generation

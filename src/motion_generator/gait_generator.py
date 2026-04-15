@@ -89,6 +89,8 @@ def main(args):
     #threading.Timer(1.0, open_browser).start()
 
     dt = 0.001
+    duration = gait_parameters.get("duration", 10.0)
+    
     start = time.time()
 
     skip_warmup = 0.0 # TODO
@@ -255,7 +257,7 @@ def main(args):
 
             footsteps_viz(motion_engine.get_supports())
 
-        if len(episode["frames"]) == args.duration * ISAACSIM_FPS:
+        if len(episode["frames"]) == duration * ISAACSIM_FPS:
             break
 
         i += 1
@@ -331,8 +333,6 @@ if __name__ == "__main__":
     parser.add_argument("--dth", type=float, required=True)
 
     parser.add_argument("--stand", type=str, required=True)
-
-    parser.add_argument("--duration", type=int, required=True)
 
     args = parser.parse_args()
 

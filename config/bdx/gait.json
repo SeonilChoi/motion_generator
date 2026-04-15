@@ -2,7 +2,7 @@
     "dx": 0.0,
     "dy": 0.0,
     "dtheta": 0.0,
-    "duration": 2.0,
+    "duration": 10.0,
     "hardware": true,
     "trunk_mode": true,
     "double_support_ratio": 0.2,

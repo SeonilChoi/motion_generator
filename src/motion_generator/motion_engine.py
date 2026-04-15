@@ -125,6 +125,7 @@ class MotionEngine:
 
         # Period
         self._period = 2 * self._robot_parameters.single_support_duration + 2 * self._robot_parameters.double_support_duration()
+        print(f"Period: {self._period}")
 
     
     @property
