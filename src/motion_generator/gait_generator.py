@@ -55,7 +55,7 @@ def main(args):
         "frames": [],
     }
 
-    is_stand = args.stand.lower() in ["True"]
+    is_stand = args.stand.lower().strip() in ("true", "1", "yes", "y", "on")
 
     # Load gait config
     gait_config_file = f"../../config/{args.robot}/gait.json"

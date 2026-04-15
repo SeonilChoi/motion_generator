@@ -7,6 +7,16 @@ import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 
 
+def _str_to_bool(value: str) -> bool:
+    """argparse: bool('False') is True in Python; parse explicitly."""
+    v = value.lower().strip()
+    if v in ("true", "1", "yes", "y", "on"):
+        return True
+    if v in ("false", "0", "no", "n", "off"):
+        return False
+    raise argparse.ArgumentTypeError(f"expected a boolean, got {value!r}")
+
+
 def main(args):
     # Load motion config
     motion_config_file = f"../config/{args.robot}/motion.json"
@@ -70,7 +80,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--jobs", type=int, required=True)
 
-    parser.add_argument("--stand", type=bool, required=True)
+    parser.add_argument("--stand", type=_str_to_bool, required=True)
 
     parser.add_argument("--duration", type=int, required=True)
 
