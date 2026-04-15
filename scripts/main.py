@@ -50,7 +50,9 @@ def main(args):
             "--robot", args.robot,
             "--dx", str(dx),
             "--dy", str(dy),
-            "--dth", str(dth)
+            "--dth", str(dth),
+            "--stand", str(args.stand),
+            "--duration", str(args.duration)
         ]
 
         commands.append(cmd)
@@ -67,6 +69,10 @@ if __name__ == "__main__":
     parser.add_argument("--num", type=int, required=True)
 
     parser.add_argument("--jobs", type=int, required=True)
+
+    parser.add_argument("--stand", type=bool, required=True)
+
+    parser.add_argument("--duration", type=int, required=True)
 
     args = parser.parse_args()
 

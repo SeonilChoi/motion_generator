@@ -1,2 +1,3 @@
 src/motion_generator/__pycache__/
 src/motion_generator.egg-info/
+data/**/*.json

@@ -39,6 +39,10 @@ class MotionEngine:
         self._robot_parameters = placo.HumanoidParameters()
         self._load_parameters(gait_parameters)
 
+        # Load collision pairs
+        #self._collisions_file_path = os.path.join(robot_folder_path, "collisions.json")
+        #self.robot.load_collision_pairs(self._collisions_file_path)
+
         # Create kinematics solver
         self._solver = placo.KinematicsSolver(self.robot)
 
@@ -122,12 +126,18 @@ class MotionEngine:
         # Period
         self._period = 2 * self._robot_parameters.single_support_duration + 2 * self._robot_parameters.double_support_duration()
 
-        print(f"Period: {self._period}")
-
     
+    @property
+    def robot_parameters(self):
+        return self._robot_parameters
+
     @property
     def t(self) -> float:
         return self._t
+
+    @property
+    def period(self):
+        return self._period
 
 
     def _load_parameters(self, gait_parameters: dict) -> None:
@@ -164,6 +174,16 @@ class MotionEngine:
     def get_supports(self):
         return self._trajectory.get_supports()
 
+    def get_current_support_phase(self):
+        if self._trajectory.support_is_both(self._t):
+            return [1, 1]
+        elif str(self._trajectory.support_side(self._t)) == "left":
+            return [1, 0]
+        elif str(self._trajectory.support_side(self._t)) == "right":
+            return [0, 1]
+        else:
+            raise ValueError(f"Invalid support phase at time {self._t}")
+
     def set_trajectory(self, dx: float, dy: float, dtheta: float) -> None:
         self._d_x = dx
         self._d_y = dy
@@ -199,8 +219,6 @@ class MotionEngine:
             self._trajectory = self._pattern_generator.replan(self._supports, self._trajectory, self._t)
 
             self._last_replan = self._t
-
-            print(f"Replanned at {self._t}")
 
         self._time_since_last_left_contact += dt
         self._time_since_last_right_contact += dt

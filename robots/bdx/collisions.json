@@ -1,0 +1,18 @@
+[
+    ["pelvis", "left_hip_rotation"],
+    ["pelvis", "neck"],
+    ["pelvis", "right_hip_rotation"],
+    ["left_hip_rotation", "left_hip"],
+    ["left_hip", "left_thigh"],
+    ["left_thigh", "left_shin"],
+    ["left_shin", "left_foot_link"],
+    ["neck", "head_body_pitch"],
+    ["head_body_pitch", "head_body_yaw"],
+    ["head_body_yaw", "head_body_roll"],
+    ["head_body_roll", "ear_left"],
+    ["head_body_roll", "ear_right"],
+    ["right_hip_rotation", "right_hip"],
+    ["right_hip", "right_thigh"],
+    ["right_thigh", "right_shin"],
+    ["right_shin", "right_foot_link"]
+]
