@@ -85,3 +85,7 @@ python src/motion_generator/gait_generator.py --index 0 --robot bdx --dx 0.0 --d
 ```
 
 Use `PYTHONPATH=src` if the package is not installed editable.
+
+## References
+
+- [Open Duck reference motion generator](https://github.com/apirrone/Open_Duck_reference_motion_generator) — related PlaCo-based reference motions for imitation learning (Open Duck / BDX-style workflows).
