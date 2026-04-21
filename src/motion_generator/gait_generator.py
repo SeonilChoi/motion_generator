@@ -71,6 +71,8 @@ def main(args):
     gait_parameters["dy"] = args.dy
     gait_parameters["dth"] = args.dth
 
+    gait_parameters["robot"] = args.robot
+
     # Set robot path
     robot_folder = f"../../robots/{args.robot}"
     robot_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), robot_folder)
@@ -324,7 +326,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--index", type=int, required=True)
 
-    parser.add_argument("--robot", type=str, required=True, choices=["bdx"])
+    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf"])
 
     parser.add_argument("--dx", type=float, required=True)
 

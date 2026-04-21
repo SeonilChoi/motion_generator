@@ -27,7 +27,7 @@ class MotionEngine:
             self._limits = json.load(f)
 
         # Load robot and parameters
-        self._urdf_file_path = os.path.join(robot_folder_path, "bdx.urdf")
+        self._urdf_file_path = os.path.join(robot_folder_path, f"{gait_parameters['robot']}.urdf")
 
         self.robot = placo.HumanoidRobot(self._urdf_file_path)
 

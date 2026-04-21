@@ -90,7 +90,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--robot", type=str, required=True, choices=["bdx"])
+    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf"])
 
     parser.add_argument("--index", type=int, required=True)
 

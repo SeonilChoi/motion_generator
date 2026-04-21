@@ -17,9 +17,6 @@ def main(args):
     @schedule(interval=0.01)
     def loop():
 
-        robot.set_joint('left_antenna', 0.0)
-        robot.set_joint('right_antenna', 0.0)
-
         robot.update_kinematics()
 
         viz.display(robot.state.q)
@@ -29,7 +26,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
-    parser.add_argument("--robot", type=str, required=True, choices=["bdx"])
+    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf"])
     
     args = parser.parse_args()
 

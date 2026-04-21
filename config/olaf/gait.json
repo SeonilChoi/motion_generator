@@ -1,9 +1,9 @@
 {
-    "robot": "bdx",
+    "robot": "olaf",
     "dx": 0.0,
     "dy": 0.0,
     "dtheta": 0.0,
-    "duration": 10.0,
+    "duration": 1000.0,
     "hardware": true,
     "trunk_mode": true,
     "double_support_ratio": 0.2,
@@ -30,25 +30,15 @@
         "left_hip_roll",
         "left_hip_pitch",
         "left_knee",
-        "left_ankle",
+        "left_ankle_pitch",
+        "left_ankle_roll",
         "right_hip_yaw",
         "right_hip_roll",
         "right_hip_pitch",
         "right_knee",
-        "right_ankle",
-        "neck_pitch",
-        "head_pitch",
-        "head_yaw",
-        "head_roll",
-        "left_antenna",
-        "right_antenna"
+        "right_ankle_pitch",
+        "right_ankle_roll"
     ],
     "joint_angles": {
-        "neck_pitch": 0.0,
-        "head_pitch": 0.0,
-        "head_yaw": 0.0,
-        "head_roll": 0.0,
-        "left_antenna": 0.0,
-        "right_antenna": 0.0
     }
 }
