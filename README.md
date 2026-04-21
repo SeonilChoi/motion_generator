@@ -1,3 +1,5 @@
+![Motion Generator banner](images/banner.png)
+
 # Motion Generator
 
 Small toolkit for **humanoid gait / motion generation** with [PlaCo](https://github.com/Rhoban/placo): it plans walking patterns, records time-series episodes (poses, velocities, contacts) for simulation or datasets, and provides helpers to visualize the URDF or replay saved JSON.
