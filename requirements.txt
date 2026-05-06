@@ -1,0 +1,4 @@
+# Install PlaCo and compiled scientific dependencies with conda-forge on Windows:
+# conda install -c conda-forge placo scipy matplotlib
+ischedule
+FramesViewer

@@ -1,0 +1,14 @@
+name: env_placo
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - coal=3.0.2=h1ea47a8_1
+  - placo
+  - numpy
+  - scipy
+  - matplotlib
+  - pip
+  - pip:
+      - ischedule
+      - FramesViewer
