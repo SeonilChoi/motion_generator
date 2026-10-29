@@ -8,38 +8,42 @@ Small toolkit for **humanoid gait / motion generation** with [PlaCo](https://git
 
 ### Python
 
-- **Python** 3.9+
-- Windows / Conda:
+- Recommended environment: **Conda `env_placo` with Python 3.11**.
+- The package metadata allows Python 3.9+, but the checked setup in this repository is the Conda environment from `environment.yml`.
+- On Windows, install PlaCo and compiled dependencies with `conda-forge`. Avoid `pip install placo`; it may try to build native dependencies and fail.
 
-  ```bash
-  conda activate env_placo
-  conda install -c conda-forge placo "coal=3.0.2=h1ea47a8_1" scipy matplotlib
-  pip install -r requirements.txt
-  pip install -e .
-  ```
+Create the checked environment:
 
-- New Conda environment:
+```bash
+conda env create -f environment.yml
+conda activate env_placo
+pip install -e .
+```
 
-  ```bash
-  conda env create -f environment.yml
-  conda activate env_placo
-  pip install -e .
-  ```
+If `env_placo` already exists, update it from the repository file:
 
-- On Windows, avoid `pip install placo`; it may try to build native dependencies and fail.
+```bash
+conda activate env_placo
+conda env update -f environment.yml --prune
+pip install -e .
+```
 
-- Existing environment:
+Manual setup for an existing Conda environment:
 
-  ```bash
-  pip install -e .
-  ```
+```bash
+conda activate env_placo
+conda install -c conda-forge placo "coal=3.0.2=h1ea47a8_1" numpy scipy matplotlib
+pip install -r requirements.txt
+pip install -e .
+```
 
-- **Runtime stack** (not all are listed in `pyproject.toml`; use your PlaCo environment as needed):
-  - **placo**, **placo_utils** (Meshcat / IK / walk pipeline)
-  - **scipy** (rotations, used by gait export and replay)
-  - **matplotlib** (replay velocity plots)
-  - **ischedule** (used by `view_robot.py`)
-  - **FramesViewer** (optional 3D replay in `replay_motion.py` when the viewer is enabled)
+Runtime stack:
+
+- **placo**, **placo_utils**: Meshcat, IK, walk-pattern pipeline
+- **numpy**, **scipy**: motion data and rotations
+- **matplotlib**: replay velocity plots
+- **ischedule**: `scripts/view_robot.py`
+- **FramesViewer**: optional 3D replay in `scripts/replay_motion.py`
 
 ### OpenGL / GLUT (optional, for `replay_motion.py` 3D viewer)
 
@@ -58,10 +62,16 @@ Or run replay **without** the OpenGL window using `--no-viewer` (see below).
 Some PlaCo wheels ship native libraries under `site-packages/cmeel.prefix/lib`. If the loader fails to find them (missing `.so` / import errors), prepend that directory to `LD_LIBRARY_PATH`. Replace the path with your Conda env name and Python version as needed.
 
 ```bash
-export LD_LIBRARY_PATH="/home/csi/anaconda3/envs/env_placo/lib/python3.10/site-packages/cmeel.prefix/lib:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="/home/csi/anaconda3/envs/env_placo/lib/python3.11/site-packages/cmeel.prefix/lib:${LD_LIBRARY_PATH:-}"
 ```
 
 Run these from the **repository root** (`motion_generator/`) unless you adjust paths.
+
+Activate the Conda environment first:
+
+```bash
+conda activate env_placo
+```
 
 ### Gait configuration: IK mode
 
@@ -89,16 +99,33 @@ Related optional fields:
 Spawns multiple runs of `src/motion_generator/gait_generator.py` with random `(dx, dy, dθ)` from `config/<robot>/motion.json`, in parallel.
 
 ```bash
-python scripts/main.py --robot bdx --num <N> --jobs <workers> --stand <true|false> --duration <seconds>
+python scripts/main.py --robot <bdx|olaf|koala|arti_h1> --num <N> --start_index <index> --jobs <workers> --stand <true|false>
 ```
 
 Example:
 
 ```bash
-python scripts/main.py --robot bdx --num 4 --jobs 2 --stand false --duration 10
+python scripts/main.py --robot bdx --num 4 --start_index 0 --jobs 2 --stand false
 ```
 
 Episode JSON files are written under `data/<robot>/` (e.g. `data/bdx/0.json`).
+The generated duration is configured in `config/<robot>/gait.json` (`duration`), not on the `scripts/main.py` command line.
+
+To create standing references, use `--stand true`; the script will generate zero `dx`, `dy`, and `dth`.
+
+### `src/motion_generator/gait_generator.py` — single gait generation
+
+Runs one episode with explicit step deltas.
+
+```bash
+python src/motion_generator/gait_generator.py --index 0 --robot bdx --dx 0.05 --dy 0.0 --dth 0.0 --stand false
+```
+
+For a standing episode:
+
+```bash
+python src/motion_generator/gait_generator.py --index 0 --robot bdx --dx 0 --dy 0 --dth 0 --stand true
+```
 
 ### `scripts/replay_motion.py` — replay a saved episode
 

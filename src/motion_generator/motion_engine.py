@@ -46,7 +46,15 @@ class MotionEngine:
 
         self.robot = placo.HumanoidRobot(self._urdf_file_path)
 
-        self.robot.set_velocity_limits(12.0)
+        joint_velocity_limit = float(gait_parameters.get("joint_velocity_limit", 12.0))
+        ankle_velocity_limit = gait_parameters.get("ankle_velocity_limit")
+
+        self.robot.set_velocity_limits(joint_velocity_limit)
+        if ankle_velocity_limit is not None:
+            ankle_velocity_limit = float(ankle_velocity_limit)
+            for joint in self.robot.joint_names():
+                if "ankle" in joint.lower():
+                    self.robot.set_velocity_limit(joint, ankle_velocity_limit)
 
         for key, lower in self._limits.items():
             if not key.endswith("_lower"):
@@ -58,6 +66,8 @@ class MotionEngine:
 
         self._robot_parameters = placo.HumanoidParameters()
         self._load_parameters(gait_parameters)
+        self._left_foot_frame = self._resolve_foot_frame(self._left_foot_frame, "left_foot")
+        self._right_foot_frame = self._resolve_foot_frame(self._right_foot_frame, "right_foot")
 
         # Load collision pairs
         #self._collisions_file_path = os.path.join(robot_folder_path, "collisions.json")
@@ -145,6 +155,7 @@ class MotionEngine:
 
         # Period
         self._period = 2 * self._robot_parameters.single_support_duration + 2 * self._robot_parameters.double_support_duration()
+        self._initialize_gait_phase()
         print(f"Period: {self._period}")
 
     
@@ -159,6 +170,70 @@ class MotionEngine:
     @property
     def period(self):
         return self._period
+
+    @property
+    def phase_rate(self) -> float:
+        """Nominal gait cycles per second."""
+        return 1.0 / self._period
+
+    @property
+    def periodic_start_time(self) -> float:
+        """First support event that belongs to the repeatable walking cycle."""
+        return self._periodic_start_time
+
+    @property
+    def phase_origin_time(self) -> float:
+        """Time at which left single support starts and gait phase is zero."""
+        return self._phase_origin_time
+
+    @property
+    def left_foot_frame(self) -> str:
+        return self._left_foot_frame
+
+    @property
+    def right_foot_frame(self) -> str:
+        return self._right_foot_frame
+
+    def _initialize_gait_phase(self) -> None:
+        """Anchor phase to Placo's actual support schedule, not absolute time.
+
+        Phase 0.0 is the beginning of left single support and phase 0.5 is
+        the beginning of right single support. The long initial double-support
+        segment is explicitly excluded from the periodic portion of the gait.
+        """
+        first_single_support = None
+        first_left_support = None
+        for support in self._supports:
+            if support.is_both():
+                continue
+            support_time = float(support.t_start)
+            support_side = str(support.side()).lower()
+            if first_single_support is None:
+                first_single_support = (support_time, support_side)
+            if "left" in support_side:
+                first_left_support = support_time
+                break
+
+        if first_single_support is None:
+            raise RuntimeError("Unable to initialize gait phase: support schedule has no single-support phase")
+
+        self._periodic_start_time = first_single_support[0]
+        if first_left_support is not None:
+            self._phase_origin_time = first_left_support
+        elif "right" in first_single_support[1]:
+            self._phase_origin_time = first_single_support[0] - 0.5 * self._period
+        else:
+            self._phase_origin_time = first_single_support[0]
+
+    def get_gait_phase(self, t: float | None = None) -> float:
+        """Return the support-aligned periodic phase in the half-open range [0, 1)."""
+        sample_time = self._t if t is None else float(t)
+        return float(((sample_time - self._phase_origin_time) / self._period) % 1.0)
+
+    def is_periodic_phase_valid(self, t: float | None = None) -> bool:
+        """Whether the sample is past the non-periodic initial double support."""
+        sample_time = self._t if t is None else float(t)
+        return sample_time >= self._periodic_start_time
 
 
     def _load_parameters(self, gait_parameters: dict) -> None:
@@ -194,6 +269,25 @@ class MotionEngine:
         self._ik_foot_task_weight = gait_parameters.get("ik_foot_task_weight", 10.0)
         self._ik_trunk_task_weight = gait_parameters.get("ik_trunk_task_weight", 5.0)
         self._right_foot_ik_yaw_offset = gait_parameters.get("right_foot_ik_yaw_offset", 0.0)
+        self._left_foot_frame = gait_parameters.get("left_foot_frame", "left_foot_frame")
+        self._right_foot_frame = gait_parameters.get("right_foot_frame", "right_foot_frame")
+
+    def _resolve_foot_frame(self, frame_name: str, fallback_frame_name: str) -> str:
+        try:
+            self.robot.get_T_world_frame(frame_name)
+            return frame_name
+        except Exception:
+            if frame_name == fallback_frame_name:
+                raise
+
+        self.robot.get_T_world_frame(fallback_frame_name)
+        return fallback_frame_name
+
+    def get_T_world_left_contact(self) -> np.ndarray:
+        return np.asarray(self.robot.get_T_world_frame(self._left_foot_frame))
+
+    def get_T_world_right_contact(self) -> np.ndarray:
+        return np.asarray(self.robot.get_T_world_frame(self._right_foot_frame))
 
     def _setup_ik_tasks(self) -> None:
         if self._ik_mode == "walk_tasks":
@@ -222,12 +316,12 @@ class MotionEngine:
         self._T_model_from_walk_left = np.linalg.inv(self._T_walk_from_model_left)
         self._T_model_from_walk_right = np.linalg.inv(self._T_walk_from_model_right)
 
-        left_foot_task = self._solver.add_frame_task("left_foot", self.robot.get_T_world_left())
-        right_foot_task = self._solver.add_frame_task("right_foot", self.robot.get_T_world_right())
+        left_foot_task = self._solver.add_frame_task(self._left_foot_frame, self.get_T_world_left_contact())
+        right_foot_task = self._solver.add_frame_task(self._right_foot_frame, self.get_T_world_right_contact())
         trunk_task = self._solver.add_frame_task("trunk", self.robot.get_T_world_frame("trunk"))
 
-        left_foot_task.configure("left_foot", "soft", self._ik_foot_task_weight)
-        right_foot_task.configure("right_foot", "soft", self._ik_foot_task_weight)
+        left_foot_task.configure(self._left_foot_frame, "soft", self._ik_foot_task_weight)
+        right_foot_task.configure(self._right_foot_frame, "soft", self._ik_foot_task_weight)
         trunk_task.configure("trunk", "soft", self._ik_trunk_task_weight)
 
         for foot_task in (left_foot_task, right_foot_task):
@@ -245,12 +339,12 @@ class MotionEngine:
 
     def _get_T_world_left_for_planning(self) -> np.ndarray:
         if self._ik_mode == "generic_frame":
-            return np.asarray(self.robot.get_T_world_left()) @ self._T_walk_from_model_left
+            return self.get_T_world_left_contact() @ self._T_walk_from_model_left
         return self.robot.get_T_world_left()
 
     def _get_T_world_right_for_planning(self) -> np.ndarray:
         if self._ik_mode == "generic_frame":
-            return np.asarray(self.robot.get_T_world_right()) @ self._T_walk_from_model_right
+            return self.get_T_world_right_contact() @ self._T_walk_from_model_right
         return self.robot.get_T_world_right()
 
     def _update_generic_tasks_from_trajectory(self, t: float) -> None:

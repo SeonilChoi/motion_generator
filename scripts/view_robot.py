@@ -26,7 +26,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
-    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf"])
+    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf", "koala", "arti_h1", "arti_d1"])
     
     args = parser.parse_args()
 

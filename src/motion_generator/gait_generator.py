@@ -6,7 +6,6 @@ import threading
 import webbrowser
 import numpy as np
 
-from placo_utils.visualization import robot_viz, robot_frame_viz, footsteps_viz
 from scipy.spatial.transform import Rotation as R
 
 from motion_generator.motion_engine import MotionEngine
@@ -14,6 +13,18 @@ from motion_generator.motion_engine import MotionEngine
 
 class RoundingFloat(float):
     __repr__ = staticmethod(lambda x: format(x, ".5f"))
+
+
+def _str_to_bool(value: str) -> bool:
+    if isinstance(value, bool):
+        return value
+
+    v = value.lower().strip()
+    if v in ("true", "1", "yes", "y", "on"):
+        return True
+    if v in ("false", "0", "no", "n", "off"):
+        return False
+    raise argparse.ArgumentTypeError(f"expected a boolean, got {value!r}")
 
 
 def open_browser():
@@ -163,6 +174,137 @@ def apply_neck_counter_head_motion_to_robot(robot, neck_motion, t):
         return
 
     robot.set_joint("head_pitch", robot.get_joint("head_pitch") + sample_neck_counter_head_pitch(neck_motion, t))
+    robot.update_kinematics()
+
+
+def classify_arm_motion_mode(dx, dy, direction_cone, min_step):
+    """forward / backward / left / right from the commanded step direction, idle when no direction dominates."""
+    if np.hypot(dx, dy) < min_step:
+        return "idle"
+
+    heading = np.arctan2(dy, dx)
+    if abs(heading) <= direction_cone:
+        return "forward"
+    if abs(heading) >= np.pi - direction_cone:
+        return "backward"
+    if abs(abs(heading) - 0.5 * np.pi) <= direction_cone:
+        return "left" if dy > 0.0 else "right"
+    return "idle"
+
+
+def make_arm_swing_motion(gait_parameters, joint_names, motion_engine):
+    config = gait_parameters.get("arm_swing_motion", {})
+    left_joint = config.get("left_joint", "left_arm_m8")
+    right_joint = config.get("right_joint", "right_arm_m8")
+    if not config.get("enabled", False) or left_joint not in joint_names or right_joint not in joint_names:
+        return None
+
+    left_plate_joint = config.get("left_plate_joint", "left_arm_m8crank_plate")
+    right_plate_joint = config.get("right_plate_joint", "right_arm_m8crank_plate")
+    has_plate = left_plate_joint in joint_names and right_plate_joint in joint_names
+
+    forward_arm = config.get("forward_arm", "swing_foot")
+    if forward_arm not in ("swing_foot", "stance_foot"):
+        raise ValueError(f"arm_swing_motion.forward_arm must be 'swing_foot' or 'stance_foot', got {forward_arm!r}")
+
+    mode = classify_arm_motion_mode(
+        gait_parameters["dx"],
+        gait_parameters["dy"],
+        np.deg2rad(float(config.get("direction_cone_deg", 30.0))),
+        float(config.get("min_step", 0.005)),
+    )
+    if mode in ("left", "right") and not has_plate:
+        mode = "idle"
+
+    parameters = motion_engine.robot_parameters
+    # Phase 0 starts left single support (right foot swinging); peak at the middle of that swing.
+    swing_peak_phase = 0.5 * parameters.single_support_duration / motion_engine.period
+
+    base_angle = np.deg2rad(float(config.get("base_angle_deg", 0.0)))
+    plate_base_angle = np.deg2rad(float(config.get("plate_base_angle_deg", 0.0)))
+    forward_sign = float(config.get("forward_sign", -1.0))
+    down_sign = float(config.get("down_sign", -1.0))
+
+    # Static (non-swinging) target per mode: (left swing, right swing, left plate, right plate)
+    targets = {
+        "idle": (base_angle, base_angle, plate_base_angle, plate_base_angle),
+        "forward": (base_angle, base_angle, plate_base_angle, plate_base_angle),
+    }
+    backward_angle = base_angle + forward_sign * np.deg2rad(float(config.get("backward_forward_angle_deg", 30.0)))
+    targets["backward"] = (backward_angle, backward_angle, plate_base_angle, plate_base_angle)
+    lateral_angle = np.deg2rad(float(config.get("lateral_plate_angle_deg", 0.0)))
+    lateral_tilt = down_sign * np.deg2rad(float(config.get("lateral_tilt_deg", 8.0)))
+    # The arm on the walking-direction side goes down, the other one up
+    targets["left"] = (base_angle, base_angle, lateral_angle + lateral_tilt, lateral_angle - lateral_tilt)
+    targets["right"] = (base_angle, base_angle, lateral_angle - lateral_tilt, lateral_angle + lateral_tilt)
+
+    print(f"Arm motion mode: {mode}")
+
+    return {
+        "mode": mode,
+        "left_joint": left_joint,
+        "right_joint": right_joint,
+        "left_plate_joint": left_plate_joint if has_plate else None,
+        "right_plate_joint": right_plate_joint if has_plate else None,
+        "left_index": joint_names.index(left_joint),
+        "right_index": joint_names.index(right_joint),
+        "left_plate_index": joint_names.index(left_plate_joint) if has_plate else None,
+        "right_plate_index": joint_names.index(right_plate_joint) if has_plate else None,
+        "initial": targets["idle"],
+        "target": targets[mode],
+        "pose_transition_duration": max(float(config.get("pose_transition_duration", 0.5)), 1e-3),
+        "amplitude": np.deg2rad(float(config.get("amplitude_deg", 15.0))),
+        "forward_sign": forward_sign,
+        "side_sign": 1.0 if forward_arm == "swing_foot" else -1.0,
+        "swing_peak_phase": swing_peak_phase,
+        "periodic_start_time": motion_engine.periodic_start_time,
+        "ramp_duration": max(float(config.get("ramp_duration", motion_engine.period)), 1e-3),
+    }
+
+
+def sample_arm_swing_motion(arm_swing, t, gait_phase):
+    """Arm pose for the episode's mode: forward swings the arms, backward holds both arms forward,
+    left/right spreads the arms out with the walking-direction side tilted down."""
+    alpha = smoothstep(max(t, 0.0) / arm_swing["pose_transition_duration"])
+    left, right, left_plate, right_plate = (
+        start + alpha * (end - start) for start, end in zip(arm_swing["initial"], arm_swing["target"])
+    )
+
+    if arm_swing["mode"] == "forward" and t >= arm_swing["periodic_start_time"]:
+        ramp = smoothstep((t - arm_swing["periodic_start_time"]) / arm_swing["ramp_duration"])
+        # +1 at mid right swing, -1 at mid left swing (sign flipped when the stance-foot arm leads)
+        right_forward = arm_swing["side_sign"] * np.cos(2.0 * np.pi * (gait_phase - arm_swing["swing_peak_phase"]))
+        offset = ramp * arm_swing["amplitude"] * arm_swing["forward_sign"] * right_forward
+        left -= offset
+        right += offset
+
+    return left, right, left_plate, right_plate
+
+
+def apply_arm_swing_motion(joints_positions, arm_swing, t, gait_phase):
+    if arm_swing is None:
+        return joints_positions
+
+    left, right, left_plate, right_plate = sample_arm_swing_motion(arm_swing, t, gait_phase)
+    joints_positions = joints_positions.copy()
+    joints_positions[arm_swing["left_index"]] = left
+    joints_positions[arm_swing["right_index"]] = right
+    if arm_swing["left_plate_index"] is not None:
+        joints_positions[arm_swing["left_plate_index"]] = left_plate
+        joints_positions[arm_swing["right_plate_index"]] = right_plate
+    return joints_positions
+
+
+def apply_arm_swing_motion_to_robot(robot, arm_swing, t, gait_phase):
+    if arm_swing is None:
+        return
+
+    left, right, left_plate, right_plate = sample_arm_swing_motion(arm_swing, t, gait_phase)
+    robot.set_joint(arm_swing["left_joint"], left)
+    robot.set_joint(arm_swing["right_joint"], right)
+    if arm_swing["left_plate_joint"] is not None:
+        robot.set_joint(arm_swing["left_plate_joint"], left_plate)
+        robot.set_joint(arm_swing["right_plate_joint"], right_plate)
     robot.update_kinematics()
 
 
@@ -356,6 +498,9 @@ def make_frame(
     left_toe_linear_velocity,
     right_toe_linear_velocity,
     foot_contacts,
+    gait_phase,
+    phase_rate,
+    periodic_valid,
 ):
     return (
         root_position
@@ -369,6 +514,9 @@ def make_frame(
         + left_toe_linear_velocity
         + right_toe_linear_velocity
         + foot_contacts
+        + gait_phase
+        + phase_rate
+        + periodic_valid
     )
 
 
@@ -385,6 +533,9 @@ def set_frame_info(
     left_toe_linear_velocity,
     right_toe_linear_velocity,
     foot_contacts,
+    gait_phase,
+    phase_rate,
+    periodic_valid,
 ):
     offset_root_position = 0
     offset_root_orientation_quat = offset_root_position + len(root_position)
@@ -397,6 +548,9 @@ def set_frame_info(
     offset_left_toe_linear_velocity = offset_joints_velocities + len(joints_velocities)
     offset_right_toe_linear_velocity = offset_left_toe_linear_velocity + len(left_toe_linear_velocity)
     offset_foot_contacts = offset_right_toe_linear_velocity + len(right_toe_linear_velocity)
+    offset_gait_phase = offset_foot_contacts + len(foot_contacts)
+    offset_phase_rate = offset_gait_phase + len(gait_phase)
+    offset_periodic_valid = offset_phase_rate + len(phase_rate)
 
     episode["frame_offset"].append(
         {
@@ -411,6 +565,9 @@ def set_frame_info(
             "left_toe_linear_velocity": offset_left_toe_linear_velocity,
             "right_toe_linear_velocity": offset_right_toe_linear_velocity,
             "foot_contacts": offset_foot_contacts,
+            "gait_phase": offset_gait_phase,
+            "phase_rate": offset_phase_rate,
+            "periodic_valid": offset_periodic_valid,
         }
     )
 
@@ -427,6 +584,9 @@ def set_frame_info(
             "left_toe_linear_velocity": len(left_toe_linear_velocity),
             "right_toe_linear_velocity": len(right_toe_linear_velocity),
             "foot_contacts": len(foot_contacts),
+            "gait_phase": len(gait_phase),
+            "phase_rate": len(phase_rate),
+            "periodic_valid": len(periodic_valid),
         }
     )
 
@@ -466,11 +626,17 @@ def set_gait_metadata(episode, gait_parameters, motion_engine, average_x, averag
         "average_y_linear_velocity": average_y,
         "average_z_angular_velocity": average_z,
         "period": motion_engine.period,
+        "phase_rate": motion_engine.phase_rate,
+        "phase_origin_time": motion_engine.phase_origin_time,
+        "periodic_start_time": motion_engine.periodic_start_time,
+        "phase_convention": "phase_0_left_single_support_start_phase_0.5_right_single_support_start",
     }
     if "head_motion" in gait_parameters:
         episode["gait_parameters"]["head_motion"] = gait_parameters["head_motion"]
     if "neck_step_motion" in gait_parameters:
         episode["gait_parameters"]["neck_step_motion"] = gait_parameters["neck_step_motion"]
+    if "arm_swing_motion" in gait_parameters:
+        episode["gait_parameters"]["arm_swing_motion"] = gait_parameters["arm_swing_motion"]
 
 
 def write_episode(args, episode):
@@ -485,7 +651,7 @@ def write_episode(args, episode):
 
 def main(args):
     ISAACSIM_FPS = 60
-    MESHCAT_FPS = 20
+    MESHCAT_FPS = ISAACSIM_FPS
 
     episode = {
         "fps": ISAACSIM_FPS,
@@ -504,6 +670,7 @@ def main(args):
     }
 
     is_stand = args.stand.lower().strip() in ("true", "1", "yes", "y", "on")
+    is_visual = _str_to_bool(getattr(args, "visual", True))
     episode["enable_cycle_offset_position"] = not is_stand
 
     # Load gait config
@@ -532,8 +699,8 @@ def main(args):
     joint_names = list(motion_engine.get_angles().keys())
     first_joints_positions = list(motion_engine.get_angles().values())
     first_T_world_fbase = np.array(motion_engine.robot.get_T_world_fbase(), copy=True)
-    first_T_world_left_foot = np.array(motion_engine.robot.get_T_world_left(), copy=True)
-    first_T_world_right_foot = np.array(motion_engine.robot.get_T_world_right(), copy=True)
+    first_T_world_left_foot = np.array(motion_engine.get_T_world_left_contact(), copy=True)
+    first_T_world_right_foot = np.array(motion_engine.get_T_world_right_contact(), copy=True)
 
     motion_engine.set_trajectory(gait_parameters["dx"], gait_parameters["dy"], gait_parameters["dth"])
 
@@ -541,6 +708,7 @@ def main(args):
     num_frames = int(round(duration * ISAACSIM_FPS))
     head_motion = make_head_motion(gait_parameters, joint_names, duration) if not is_stand else None
     neck_step_motion = make_neck_step_motion(gait_parameters, joint_names) if not is_stand else None
+    arm_swing_motion = make_arm_swing_motion(gait_parameters, joint_names, motion_engine) if not is_stand else None
 
     if is_stand:
         root_position = list(first_T_world_fbase[:3, 3])
@@ -557,6 +725,9 @@ def main(args):
         left_toe_linear_velocity = [0.0, 0.0, 0.0]
         right_toe_linear_velocity = [0.0, 0.0, 0.0]
         foot_contacts = [1, 1]
+        gait_phase = [0.0]
+        phase_rate = [0.0]
+        periodic_valid = [0.0]
 
         frame = make_frame(
             root_position,
@@ -570,6 +741,9 @@ def main(args):
             left_toe_linear_velocity,
             right_toe_linear_velocity,
             foot_contacts,
+            gait_phase,
+            phase_rate,
+            periodic_valid,
         )
         episode["frames"] = [frame.copy() for _ in range(num_frames)]
         episode["joints"] = joint_names
@@ -586,6 +760,9 @@ def main(args):
             left_toe_linear_velocity,
             right_toe_linear_velocity,
             foot_contacts,
+            gait_phase,
+            phase_rate,
+            periodic_valid,
         )
         set_gait_metadata(episode, gait_parameters, motion_engine, 0.0, 0.0, 0.0)
 
@@ -596,8 +773,11 @@ def main(args):
         write_episode(args, episode)
         return
 
-    viz = robot_viz(motion_engine.robot)
-    #threading.Timer(1.0, open_browser).start()
+    if is_visual:
+        from placo_utils.visualization import robot_viz, robot_frame_viz, footsteps_viz
+
+        viz = robot_viz(motion_engine.robot)
+        #threading.Timer(1.0, open_browser).start()
 
     dt = 0.001
     
@@ -605,8 +785,8 @@ def main(args):
 
     skip_warmup = 0.0 # TODO
 
-    last_record = 0.0
-    last_meshcat_display = 0.0
+    next_record = 0.0
+    next_meshcat_display = 0.0
     
     prev_root_position = [0.0, 0.0, 0.0]
     prev_root_orientation_quat = None
@@ -628,19 +808,19 @@ def main(args):
         motion_engine.tick(dt)
         if motion_engine.t <= 0 + skip_warmup:
             start = motion_engine.t
-            last_record = motion_engine.t + 1 / ISAACSIM_FPS
-            last_meshcat_display = motion_engine.t + 1 / MESHCAT_FPS
+            next_record = motion_engine.t + 1 / ISAACSIM_FPS
+            next_meshcat_display = motion_engine.t + 1 / MESHCAT_FPS
             continue
 
-        if motion_engine.t - last_record >= 1 / ISAACSIM_FPS:
+        if motion_engine.t + 1e-9 >= next_record:
             T_world_fbase = motion_engine.robot.get_T_world_fbase()
             
             root_position = list(T_world_fbase[:3, 3])
             root_orientation_quat = list(R.from_matrix(T_world_fbase[:3, :3]).as_quat())
 
             joints_positions = list(motion_engine.get_angles().values())
-            T_world_left_foot = motion_engine.robot.get_T_world_left()
-            T_world_right_foot = motion_engine.robot.get_T_world_right()
+            T_world_left_foot = motion_engine.get_T_world_left_contact()
+            T_world_right_foot = motion_engine.get_T_world_right_contact()
 
             T_body_left_foot = np.linalg.inv(T_world_fbase) @ T_world_left_foot
             T_body_right_foot = np.linalg.inv(T_world_fbase) @ T_world_right_foot
@@ -673,6 +853,9 @@ def main(args):
             right_toe_linear_velocity = list((np.array(right_toe_position) - np.array(prev_right_toe_position)) / (1 / ISAACSIM_FPS))
 
             foot_contacts = motion_engine.get_current_support_phase()
+            gait_phase = [motion_engine.get_gait_phase()]
+            phase_rate = [motion_engine.phase_rate]
+            periodic_valid = [float(motion_engine.is_periodic_phase_valid())]
 
             if is_prev_initialized:
                 frame_t = len(episode["frames"]) / ISAACSIM_FPS
@@ -681,6 +864,7 @@ def main(args):
                 joints_positions = apply_head_motion(joints_positions, head_motion, frame_t)
                 joints_positions = apply_neck_counter_head_motion(joints_positions, neck_step_motion, frame_t)
                 joints_positions = apply_antenna_motion(joints_positions, head_motion)
+                joints_positions = apply_arm_swing_motion(joints_positions, arm_swing_motion, motion_engine.t, gait_phase[0])
                 joints_velocities = list((np.array(joints_positions) - np.array(prev_joints_positions)) / (1 / ISAACSIM_FPS))
 
                 episode["frames"].append(
@@ -696,6 +880,9 @@ def main(args):
                         left_toe_linear_velocity,
                         right_toe_linear_velocity,
                         foot_contacts,
+                        gait_phase,
+                        phase_rate,
+                        periodic_valid,
                     )
                 )
 
@@ -713,13 +900,16 @@ def main(args):
                         left_toe_linear_velocity,
                         right_toe_linear_velocity,
                         foot_contacts,
+                        gait_phase,
+                        phase_rate,
+                        periodic_valid,
                     )
 
                     episode["joints"] = joint_names
 
                     is_added_frame_info = True
 
-            last_record = motion_engine.t
+            next_record += 1 / ISAACSIM_FPS
 
             prev_root_position = root_position.copy()
             prev_root_orientation_quat = root_orientation_quat.copy()
@@ -730,17 +920,18 @@ def main(args):
 
             is_prev_initialized = True
 
-        if motion_engine.t - last_meshcat_display >= 1 / MESHCAT_FPS:
-            last_meshcat_display = motion_engine.t
+        if is_visual and motion_engine.t + 1e-9 >= next_meshcat_display:
+            next_meshcat_display += 1 / MESHCAT_FPS
             apply_head_motion_to_robot(motion_engine.robot, head_motion, motion_engine.t)
             apply_neck_step_motion_to_robot(motion_engine.robot, neck_step_motion, motion_engine.t)
             apply_neck_counter_head_motion_to_robot(motion_engine.robot, neck_step_motion, motion_engine.t)
             apply_antenna_motion_to_robot(motion_engine.robot, head_motion)
+            apply_arm_swing_motion_to_robot(motion_engine.robot, arm_swing_motion, motion_engine.t, motion_engine.get_gait_phase())
             viz.display(motion_engine.robot.state.q)
 
             robot_frame_viz(motion_engine.robot, "trunk")
-            robot_frame_viz(motion_engine.robot, "left_foot")
-            robot_frame_viz(motion_engine.robot, "right_foot")
+            robot_frame_viz(motion_engine.robot, motion_engine.left_foot_frame)
+            robot_frame_viz(motion_engine.robot, motion_engine.right_foot_frame)
 
             footsteps_viz(motion_engine.get_supports())
 
@@ -778,7 +969,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--index", type=int, required=True)
 
-    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf"])
+    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf", "koala", "arti_h1", "arti_d1"])
 
     parser.add_argument("--dx", type=float, required=True)
 
@@ -787,6 +978,8 @@ if __name__ == "__main__":
     parser.add_argument("--dth", type=float, required=True)
 
     parser.add_argument("--stand", type=str, required=True)
+
+    parser.add_argument("--visual", type=_str_to_bool, default=True)
 
     args = parser.parse_args()
 

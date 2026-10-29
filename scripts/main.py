@@ -66,7 +66,8 @@ def main(args):
             "--dx", str(dx),
             "--dy", str(dy),
             "--dth", str(dth),
-            "--stand", str(args.stand)
+            "--stand", str(args.stand),
+            "--visual", str(args.visual),
         ]
 
         commands.append(cmd)
@@ -78,7 +79,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf"])
+    parser.add_argument("--robot", type=str, required=True, choices=["bdx", "olaf", "koala", "arti_h1", "arti_d1"])
 
     parser.add_argument("--num", type=int, required=True)
 
@@ -87,6 +88,8 @@ if __name__ == "__main__":
     parser.add_argument("--jobs", type=int, required=True)
 
     parser.add_argument("--stand", type=_str_to_bool, required=True)
+
+    parser.add_argument("--visual", type=_str_to_bool, default=True)
 
     args = parser.parse_args()
 
