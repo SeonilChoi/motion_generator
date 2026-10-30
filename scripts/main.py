@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import argparse
 import subprocess
@@ -59,7 +60,7 @@ def main(args):
             )
 
         cmd = [
-            "python",
+            sys.executable,
             source_file_path,
             "--index", str(i + args.start_index),
             "--robot", args.robot,
