@@ -8,6 +8,7 @@ Small toolkit for **humanoid gait / motion generation** with [PlaCo](https://git
 
 ### Python
 
+- **Ubuntu (uv, Python 3.12, pip PlaCo wheels):** see [SETUP_UBUNTU.md](SETUP_UBUNTU.md). Headless batch generation: `scripts/generate_motions.sh <robot> <num> <jobs> [motions_root]`; `main.py` / `gait_generator.py` accept `--out_dir`.
 - Recommended environment: **Conda `env_placo` with Python 3.11**.
 - The package metadata allows Python 3.9+, but the checked setup in this repository is the Conda environment from `environment.yml`.
 - On Windows, install PlaCo and compiled dependencies with `conda-forge`. Avoid `pip install placo`; it may try to build native dependencies and fail.
