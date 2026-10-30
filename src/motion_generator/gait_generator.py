@@ -641,7 +641,12 @@ def set_gait_metadata(episode, gait_parameters, motion_engine, average_x, averag
 
 def write_episode(args, episode):
     file_name = f"{args.index}.json"
-    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", f"{args.robot}", file_name)
+    if getattr(args, "out_dir", None):
+        out_dir = os.path.abspath(args.out_dir)
+    else:
+        out_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", f"{args.robot}")
+    os.makedirs(out_dir, exist_ok=True)
+    file_path = os.path.join(out_dir, file_name)
 
     with open(file_path, "w") as f:
         json.encoder.c_make_encoder = None
@@ -980,6 +985,8 @@ if __name__ == "__main__":
     parser.add_argument("--stand", type=str, required=True)
 
     parser.add_argument("--visual", type=_str_to_bool, default=True)
+
+    parser.add_argument("--out_dir", type=str, default=None, help="Directory for <index>.json (default: data/<robot>)")
 
     args = parser.parse_args()
 

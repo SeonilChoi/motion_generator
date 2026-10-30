@@ -70,6 +70,8 @@ def main(args):
             "--stand", str(args.stand),
             "--visual", str(args.visual),
         ]
+        if args.out_dir:
+            cmd += ["--out_dir", os.path.abspath(args.out_dir)]
 
         commands.append(cmd)
 
@@ -91,6 +93,8 @@ if __name__ == "__main__":
     parser.add_argument("--stand", type=_str_to_bool, required=True)
 
     parser.add_argument("--visual", type=_str_to_bool, default=True)
+
+    parser.add_argument("--out_dir", type=str, default=None, help="Directory for <index>.json (default: data/<robot>)")
 
     args = parser.parse_args()
 
