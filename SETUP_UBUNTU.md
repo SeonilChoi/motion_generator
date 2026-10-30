@@ -97,7 +97,7 @@ comes from `scripts/tuning/make_stand_clip.py` there.
   if `(0,0,0)` is kept at index 202. The shipped H1 set was made with an older `gen_motions.py` that kept it, and
   `202.json` was then deleted. The script then dropped `(0,0,0)`, so a full H1 regeneration had the same 999
   commands but indices 203-999 shifted down by one. **Fixed** in `arti_h1_local/scripts/tuning/gen_motions.py`
-  (uncommitted there): the `(0,0,0)` slot keeps its index and is skipped. The fixed command list matches every
+  (commit `5ad9865` on `isaaclab3`): the `(0,0,0)` slot keeps its index and is skipped. The fixed command list matches every
   shipped H1 clip (indices 0-999 minus 202), and a 3-clip run is identical to the shipped `0-2.json`.
 - D1 joint order in the JSON is the PlaCo/URDF order (legs L, legs R, arms), not Dynamixel ID 1-14. This is the
   same as the shipped clips, and `MotionLoader` remaps by name to `robot.data.joint_names`, which `arti_d1_env.py`
