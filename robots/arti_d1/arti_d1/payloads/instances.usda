@@ -1,0 +1,345 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.3.2"
+    }
+    endTimeCode = 1000000
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    startTimeCode = 0
+    upAxis = "Z"
+)
+
+def Scope "Instances"
+{
+    def Xform "pelvis" (
+        prepend references = @./geometries.usd@</Geometries/pelvis>
+    )
+    {
+        over "pelvis"
+        {
+        }
+    }
+
+    def Xform "pelvis_1" (
+        prepend references = @./geometries.usd@</Geometries/pelvis>
+    )
+    {
+        over "pelvis" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "left_hip" (
+        prepend references = @./geometries.usd@</Geometries/left_hip>
+    )
+    {
+        over "left_hip"
+        {
+        }
+    }
+
+    def Xform "left_hip_1" (
+        prepend references = @./geometries.usd@</Geometries/left_hip>
+    )
+    {
+        over "left_hip" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "left_roll_to_pitch" (
+        prepend references = @./geometries.usd@</Geometries/left_roll_to_pitch>
+    )
+    {
+        over "left_roll_to_pitch"
+        {
+        }
+    }
+
+    def Xform "left_roll_to_pitch_1" (
+        prepend references = @./geometries.usd@</Geometries/left_roll_to_pitch>
+    )
+    {
+        over "left_roll_to_pitch" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "left_thigh" (
+        prepend references = @./geometries.usd@</Geometries/left_thigh>
+    )
+    {
+        over "left_thigh"
+        {
+        }
+    }
+
+    def Xform "left_thigh_1" (
+        prepend references = @./geometries.usd@</Geometries/left_thigh>
+    )
+    {
+        over "left_thigh" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "left_shin" (
+        prepend references = @./geometries.usd@</Geometries/left_shin>
+    )
+    {
+        over "left_shin"
+        {
+        }
+    }
+
+    def Xform "left_shin_1" (
+        prepend references = @./geometries.usd@</Geometries/left_shin>
+    )
+    {
+        over "left_shin" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "left_foot" (
+        prepend references = @./geometries.usd@</Geometries/left_foot>
+    )
+    {
+        over "left_foot"
+        {
+        }
+    }
+
+    def Xform "left_foot_1" (
+        prepend references = @./geometries.usd@</Geometries/left_foot>
+    )
+    {
+        over "left_foot" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "right_hip" (
+        prepend references = @./geometries.usd@</Geometries/right_hip>
+    )
+    {
+        over "right_hip"
+        {
+        }
+    }
+
+    def Xform "right_hip_1" (
+        prepend references = @./geometries.usd@</Geometries/right_hip>
+    )
+    {
+        over "right_hip" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "right_roll_to_pitch" (
+        prepend references = @./geometries.usd@</Geometries/right_roll_to_pitch>
+    )
+    {
+        over "right_roll_to_pitch"
+        {
+        }
+    }
+
+    def Xform "right_roll_to_pitch_1" (
+        prepend references = @./geometries.usd@</Geometries/right_roll_to_pitch>
+    )
+    {
+        over "right_roll_to_pitch" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "right_thigh" (
+        prepend references = @./geometries.usd@</Geometries/right_thigh>
+    )
+    {
+        over "right_thigh"
+        {
+        }
+    }
+
+    def Xform "right_thigh_1" (
+        prepend references = @./geometries.usd@</Geometries/right_thigh>
+    )
+    {
+        over "right_thigh" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "right_shin" (
+        prepend references = @./geometries.usd@</Geometries/right_shin>
+    )
+    {
+        over "right_shin"
+        {
+        }
+    }
+
+    def Xform "right_shin_1" (
+        prepend references = @./geometries.usd@</Geometries/right_shin>
+    )
+    {
+        over "right_shin" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "right_foot" (
+        prepend references = @./geometries.usd@</Geometries/right_foot>
+    )
+    {
+        over "right_foot"
+        {
+        }
+    }
+
+    def Xform "right_foot_1" (
+        prepend references = @./geometries.usd@</Geometries/right_foot>
+    )
+    {
+        over "right_foot" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "left_arm_m8_crank" (
+        prepend references = @./geometries.usd@</Geometries/left_arm_m8_crank>
+    )
+    {
+        over "left_arm_m8_crank"
+        {
+        }
+    }
+
+    def Xform "left_arm_m8_crank_1" (
+        prepend references = @./geometries.usd@</Geometries/left_arm_m8_crank>
+    )
+    {
+        over "left_arm_m8_crank" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "left_arm_plate" (
+        prepend references = @./geometries.usd@</Geometries/left_arm_plate>
+    )
+    {
+        over "left_arm_plate"
+        {
+        }
+    }
+
+    def Xform "left_arm_plate_1" (
+        prepend references = @./geometries.usd@</Geometries/left_arm_plate>
+    )
+    {
+        over "left_arm_plate" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "right_arm_m8_crank" (
+        prepend references = @./geometries.usd@</Geometries/right_arm_m8_crank>
+    )
+    {
+        over "right_arm_m8_crank"
+        {
+        }
+    }
+
+    def Xform "right_arm_m8_crank_1" (
+        prepend references = @./geometries.usd@</Geometries/right_arm_m8_crank>
+    )
+    {
+        over "right_arm_m8_crank" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+
+    def Xform "right_arm_plate" (
+        prepend references = @./geometries.usd@</Geometries/right_arm_plate>
+    )
+    {
+        over "right_arm_plate"
+        {
+        }
+    }
+
+    def Xform "right_arm_plate_1" (
+        prepend references = @./geometries.usd@</Geometries/right_arm_plate>
+    )
+    {
+        over "right_arm_plate" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI"]
+        )
+        {
+            token physics:approximation = "convexHull"
+            token purpose = "guide"
+        }
+    }
+}
+

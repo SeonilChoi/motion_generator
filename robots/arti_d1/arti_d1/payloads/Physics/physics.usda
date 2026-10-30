@@ -1,0 +1,533 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.3.2"
+    }
+    defaultPrim = "arti_d1"
+    endTimeCode = 1000000
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    startTimeCode = 0
+    upAxis = "Z"
+)
+
+over "arti_d1"
+{
+    over "Geometry"
+    {
+        over "pelvis" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsArticulationRootAPI", "NewtonArticulationRootAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+        )
+        {
+            double[] newton:inertia = [0.0179764, 0.0137874, 0.0183283, 0.00000422501, 0.00060127, -0.00000715743]
+            bool newton:selfCollisionEnabled = 0
+            point3f physics:centerOfMass = (0.0142445, 0.0000536923, 0.308529)
+            float3 physics:diagonalInertia = (0.013787382, 0.01752588, 0.018778838)
+            float physics:mass = 3.69352
+            quatf physics:principalAxes = (-0.22390017, 0.6702532, 0.6714871, -0.2230122)
+
+            over "trunk" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+            )
+            {
+                double[] newton:inertia = [0, 0, 0, 0, 0, 0]
+                point3f physics:centerOfMass = (0, 0, 0)
+                float3 physics:diagonalInertia = (0, 0, 0)
+                float physics:mass = 1e-9
+                quatf physics:principalAxes = (1, 0, 0, 0)
+            }
+
+            over "left_hip" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+            )
+            {
+                double[] newton:inertia = [0.0000944363, 0.000104571, 0.0000545394, 0, 8.88875e-7, 0]
+                point3f physics:centerOfMass = (-0.00492338, 0, -0.084295)
+                float3 physics:diagonalInertia = (0.000054519605, 0.000094456096, 0.000104571)
+                float physics:mass = 0.19661
+                quatf physics:principalAxes = (-0.494403, 0.494403, 0.50553507, 0.50553507)
+
+                over "left_roll_to_pitch" (
+                    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                )
+                {
+                    double[] newton:inertia = [0.000106859, 0.000105589, 0.000163882, -0.00000432704, 3.58423e-7, 0.00000170213]
+                    point3f physics:centerOfMass = (0.0277586, 0.0608919, 0.00177323)
+                    float3 physics:diagonalInertia = (0.00010181323, 0.000110584166, 0.00016393261)
+                    float physics:mass = 0.220929
+                    quatf physics:principalAxes = (0.012261486, 0.9087025, 0.4171899, -0.007879459)
+
+                    over "left_thigh" (
+                        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                    )
+                    {
+                        double[] newton:inertia = [0.000117356, 0.000112819, 0.0000948907, 6.01623e-7, -0.0000355819, 8.2081e-7]
+                        point3f physics:centerOfMass = (-0.0339167, 0.0245583, -0.0462735)
+                        float3 physics:diagonalInertia = (0.00006878704, 0.00011284252, 0.00014343613)
+                        float physics:mass = 0.201567
+                        quatf physics:principalAxes = (0.8918957, 0.005223799, -0.45209357, -0.01030553)
+
+                        over "left_shin" (
+                            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                        )
+                        {
+                            double[] newton:inertia = [0.000109424, 0.000112813, 0.00010282, 6.87261e-7, 0.0000371616, -7.52772e-7]
+                            point3f physics:centerOfMass = (0.0387273, 0.023442, -0.0423231)
+                            float3 physics:diagonalInertia = (0.00006879039, 0.0001128366, 0.00014343)
+                            float physics:mass = 0.201572
+                            quatf physics:principalAxes = (-0.40302992, 0.010600675, 0.9151136, -0.004647767)
+
+                            over "left_foot_link" (
+                                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                            )
+                            {
+                                double[] newton:inertia = [0.0000891057, 0.000156093, 0.000181798, -8.45586e-8, 0.00000700463, 2.94024e-7]
+                                point3f physics:centerOfMass = (0.0116596, -0.0237721, -0.0422721)
+                                float3 physics:diagonalInertia = (0.00008857919, 0.00015609003, 0.00018232748)
+                                float physics:mass = 0.15981
+                                quatf physics:principalAxes = (0.99928176, -0.005433669, 0.037489243, 0.0009920597)
+                            }
+                        }
+                    }
+                }
+            }
+
+            over "right_hip" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+            )
+            {
+                double[] newton:inertia = [0.0000944363, 0.000104571, 0.0000545394, 0, 8.88875e-7, 0]
+                point3f physics:centerOfMass = (-0.00492338, 0, -0.084295)
+                float3 physics:diagonalInertia = (0.000054519605, 0.000094456096, 0.000104571)
+                float physics:mass = 0.19661
+                quatf physics:principalAxes = (-0.494403, 0.494403, 0.50553507, 0.50553507)
+
+                over "right_roll_to_pitch" (
+                    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                )
+                {
+                    double[] newton:inertia = [0.000106858, 0.000105587, 0.00016388, 0.00000432791, 3.5834e-7, -0.00000170218]
+                    point3f physics:centerOfMass = (0.0277584, -0.060892, 0.00177324)
+                    float3 physics:diagonalInertia = (0.000101810794, 0.0001105836, 0.00016393061)
+                    float physics:mass = 0.220928
+                    quatf physics:principalAxes = (-0.0078790495, 0.41720885, 0.90869373, 0.012262141)
+
+                    over "right_thigh" (
+                        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                    )
+                    {
+                        double[] newton:inertia = [0.000117355, 0.000112818, 0.0000948903, -6.03408e-7, -0.0000355812, -8.23245e-7]
+                        point3f physics:centerOfMass = (-0.0339168, -0.0245577, -0.0462736)
+                        float3 physics:diagonalInertia = (0.00006878696, 0.00011284166, 0.00014343468)
+                        float physics:mass = 0.201567
+                        quatf physics:principalAxes = (0.89189553, -0.005239382, -0.45209295, 0.010336316)
+
+                        over "right_shin" (
+                            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                        )
+                        {
+                            double[] newton:inertia = [0.000109423, 0.00011281, 0.000102816, -6.8696e-7, 0.0000371613, 7.50737e-7]
+                            point3f physics:centerOfMass = (0.0387277, -0.0234417, -0.0423232)
+                            float3 physics:diagonalInertia = (0.00006878813, 0.00011283352, 0.00014342734)
+                            float physics:mass = 0.201569
+                            quatf physics:principalAxes = (-0.40303937, -0.010575378, 0.9151097, 0.0046576886)
+
+                            over "right_foot_link" (
+                                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                            )
+                            {
+                                double[] newton:inertia = [0.0000891057, 0.000156093, 0.000181798, -8.45586e-8, 0.00000700463, 2.94024e-7]
+                                point3f physics:centerOfMass = (0.0116596, 0.0242279, -0.0422721)
+                                float3 physics:diagonalInertia = (0.00008857919, 0.00015609003, 0.00018232748)
+                                float physics:mass = 0.15981
+                                quatf physics:principalAxes = (0.99928176, -0.005433669, 0.037489243, 0.0009920597)
+                            }
+                        }
+                    }
+                }
+            }
+
+            over "left_arm_m8_crank" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+            )
+            {
+                double[] newton:inertia = [8.98065e-7, 0.00000258505, 0.00000196519, 0, 0.00000103863, 0]
+                point3f physics:centerOfMass = (-0.0253569, 5.20576e-8, 0.013644)
+                float3 physics:diagonalInertia = (2.6396265e-7, 0.00000258505, 0.0000025992924)
+                float physics:mass = 0.0078822
+                quatf physics:principalAxes = (0.96268034, -1.2224581e-14, 0.27064094, 3.4843698e-15)
+
+                over "left_arm_plate" (
+                    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                )
+                {
+                    double[] newton:inertia = [0.000147627, 0.00000621553, 0.000148816, -0.00000608529, -2.25225e-7, -8.98693e-7]
+                    point3f physics:centerOfMass = (0.0114968, 0.091619, 0.00152674)
+                    float3 physics:diagonalInertia = (0.000005948383, 0.00014785252, 0.00014885762)
+                    float physics:mass = 0.0606196
+                    quatf physics:principalAxes = (0.066325955, 0.7190698, 0.6884235, 0.06791609)
+                }
+            }
+
+            over "right_arm_m8_crank" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+            )
+            {
+                double[] newton:inertia = [8.98084e-7, 0.00000258514, 0.00000196528, 0, 0.00000103866, 0]
+                point3f physics:centerOfMass = (-0.0253566, -4.06803e-9, 0.0136439)
+                float3 physics:diagonalInertia = (2.6397424e-7, 0.00000258514, 0.0000025993897)
+                float physics:mass = 0.00788231
+                quatf physics:principalAxes = (0.9626814, 1.2166905e-14, 0.27063724, -3.482553e-15)
+
+                over "right_arm_plate" (
+                    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "NewtonMassAPI"]
+                )
+                {
+                    double[] newton:inertia = [0.000147626, 0.00000621553, 0.000148816, 0.00000608533, -2.25229e-7, 8.98572e-7]
+                    point3f physics:centerOfMass = (0.0114968, -0.0916191, 0.00152676)
+                    float3 physics:diagonalInertia = (0.000005948379, 0.00014785155, 0.0001488576)
+                    float physics:mass = 0.0606195
+                    quatf physics:principalAxes = (0.067855485, 0.68842924, 0.7190758, 0.066263296)
+                }
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        def PhysicsRevoluteJoint "left_hip_yaw" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Z"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/left_hip>
+            point3f physics:localPos0 = (0.00964957, 0.035, 0.288845)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -30.000013
+            float physics:upperLimit = 30.000013
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "left_hip_roll" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "X"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/left_hip>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/left_hip/left_roll_to_pitch>
+            point3f physics:localPos0 = (-0.0295, 0, -0.10025)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0.9971888, -0.07492986, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -17.999985
+            float physics:upperLimit = 12.000028
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "left_hip_pitch" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/left_hip/left_roll_to_pitch>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/left_hip/left_roll_to_pitch/left_thigh>
+            point3f physics:localPos0 = (0.01325, 0.04175, -0.000005)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -66.24023
+            float physics:upperLimit = 44.75998
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "left_knee" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/left_hip/left_roll_to_pitch/left_thigh>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/left_hip/left_roll_to_pitch/left_thigh/left_shin>
+            point3f physics:localPos0 = (-0.0464984, -6.938894e-18, -0.063439)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -20.300009
+            float physics:upperLimit = 88.70017
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "left_ankle" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/left_hip/left_roll_to_pitch/left_thigh/left_shin>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/left_hip/left_roll_to_pitch/left_thigh/left_shin/left_foot_link>
+            point3f physics:localPos0 = (0.0530947, 0.048, -0.0580239)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -103.45612
+            float physics:upperLimit = 32.544003
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "right_hip_yaw" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Z"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/right_hip>
+            point3f physics:localPos0 = (0.00964957, -0.035, 0.288845)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -30.000013
+            float physics:upperLimit = 30.000013
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "right_hip_roll" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "X"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/right_hip>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/right_hip/right_roll_to_pitch>
+            point3f physics:localPos0 = (-0.0295, 0, -0.10025)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0.9971888, 0.07492986, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -12.000028
+            float physics:upperLimit = 17.999985
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "right_hip_pitch" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/right_hip/right_roll_to_pitch>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/right_hip/right_roll_to_pitch/right_thigh>
+            point3f physics:localPos0 = (0.01325, -0.04175, -0.000005)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -66.24023
+            float physics:upperLimit = 44.75998
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "right_knee" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/right_hip/right_roll_to_pitch/right_thigh>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/right_hip/right_roll_to_pitch/right_thigh/right_shin>
+            point3f physics:localPos0 = (-0.0464984, 6.938894e-18, -0.063439)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -20.300009
+            float physics:upperLimit = 88.70017
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "right_ankle" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 10.6
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 179.90875
+            uniform token physics:axis = "Y"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/right_hip/right_roll_to_pitch/right_thigh/right_shin>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/right_hip/right_roll_to_pitch/right_thigh/right_shin/right_foot_link>
+            point3f physics:localPos0 = (0.0530947, -0.048, -0.0580239)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+            float physics:lowerLimit = -103.45612
+            float physics:upperLimit = 32.544003
+            custom float urdf:limit:effort = 10.6
+        }
+
+        def PhysicsRevoluteJoint "left_arm_m8" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 4.1
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 276.16565
+            uniform token physics:axis = "X"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/left_arm_m8_crank>
+            point3f physics:localPos0 = (0.0248443, 0.12358, 0.280529)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0.6087614, 0, -0.7933533, 0)
+            quatf physics:localRot1 = (0.6087614, 0, -0.7933533, 0)
+            float physics:lowerLimit = -60.00014
+            float physics:upperLimit = 20.000008
+            custom float urdf:limit:effort = 4.1
+        }
+
+        def PhysicsRevoluteJoint "left_arm_m8crank_plate" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 4.1
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 276.16565
+            uniform token physics:axis = "X"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/left_arm_m8_crank>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/left_arm_m8_crank/left_arm_plate>
+            point3f physics:localPos0 = (-0.0214747, 0, 0.0256665)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0.9914449, 0, -0.13052611, 0)
+            quatf physics:localRot1 = (0.9914449, 0, -0.13052611, 0)
+            float physics:lowerLimit = -13.000011
+            float physics:upperLimit = 66.99997
+            custom float urdf:limit:effort = 4.1
+        }
+
+        def PhysicsRevoluteJoint "right_arm_m8" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 4.1
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 276.16565
+            uniform token physics:axis = "X"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/right_arm_m8_crank>
+            point3f physics:localPos0 = (0.0248443, -0.12358, 0.280529)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0.7933533, 0, 0.6087614, 0)
+            quatf physics:localRot1 = (0.7933533, 0, 0.6087614, 0)
+            float physics:lowerLimit = -60.00014
+            float physics:upperLimit = 20.000008
+            custom float urdf:limit:effort = 4.1
+        }
+
+        def PhysicsRevoluteJoint "right_arm_m8crank_plate" (
+            prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+        )
+        {
+            float drive:angular:physics:damping = 0
+            float drive:angular:physics:maxForce = 4.1
+            float drive:angular:physics:stiffness = 0
+            uniform token drive:angular:physics:type = "force"
+            float newton:velocityLimit = 276.16565
+            uniform token physics:axis = "X"
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis/right_arm_m8_crank>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/right_arm_m8_crank/right_arm_plate>
+            point3f physics:localPos0 = (-0.0214747, 0, 0.0256665)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (0.13052611, 0, 0.9914449, 0)
+            quatf physics:localRot1 = (0.13052611, 0, 0.9914449, 0)
+            float physics:lowerLimit = -13.000011
+            float physics:upperLimit = 66.99997
+            custom float urdf:limit:effort = 4.1
+        }
+
+        def PhysicsFixedJoint "trunk_frame"
+        {
+            custom rel physics:body0
+            append rel physics:body0 = </arti_d1/Geometry/pelvis>
+            custom rel physics:body1
+            append rel physics:body1 = </arti_d1/Geometry/pelvis/trunk>
+            point3f physics:localPos0 = (0.00964957, 0, 0.254045)
+            point3f physics:localPos1 = (0, 0, 0)
+            quatf physics:localRot0 = (1, 0, 0, 0)
+            quatf physics:localRot1 = (1, 0, 0, 0)
+        }
+    }
+}
+

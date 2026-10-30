@@ -1,0 +1,232 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "URDF USD Converter v0.3.2"
+    }
+    defaultPrim = "arti_d1"
+    endTimeCode = 1000000
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    startTimeCode = 0
+    subLayers = [
+        @./physics.usda@
+    ]
+    upAxis = "Z"
+)
+
+over "arti_d1"
+{
+    over "Physics"
+    {
+        over "left_hip_yaw" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "left_hip_roll" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "left_hip_pitch" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "left_knee" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "left_ankle" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "right_hip_yaw" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "right_hip_roll" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "right_hip_pitch" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "right_knee" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "right_ankle" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "left_arm_m8" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "left_arm_m8crank_plate" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "right_arm_m8" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        over "right_arm_m8crank_plate" (
+            delete apiSchemas = ["PhysicsDriveAPI:angular", "PhysicsJointStateAPI:angular"]
+            prepend apiSchemas = ["MjcJointAPI"]
+        )
+        {
+        }
+
+        def MjcActuator "left_hip_yaw_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/left_hip_yaw>
+        }
+
+        def MjcActuator "left_hip_roll_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/left_hip_roll>
+        }
+
+        def MjcActuator "left_hip_pitch_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/left_hip_pitch>
+        }
+
+        def MjcActuator "left_knee_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/left_knee>
+        }
+
+        def MjcActuator "left_ankle_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/left_ankle>
+        }
+
+        def MjcActuator "right_hip_yaw_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/right_hip_yaw>
+        }
+
+        def MjcActuator "right_hip_roll_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/right_hip_roll>
+        }
+
+        def MjcActuator "right_hip_pitch_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/right_hip_pitch>
+        }
+
+        def MjcActuator "right_knee_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/right_knee>
+        }
+
+        def MjcActuator "right_ankle_actuator"
+        {
+            uniform double mjc:forceRange:max = 10.600000381469727
+            uniform double mjc:forceRange:min = -10.600000381469727
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/right_ankle>
+        }
+
+        def MjcActuator "left_arm_m8_actuator"
+        {
+            uniform double mjc:forceRange:max = 4.099999904632568
+            uniform double mjc:forceRange:min = -4.099999904632568
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/left_arm_m8>
+        }
+
+        def MjcActuator "left_arm_m8crank_plate_actuator"
+        {
+            uniform double mjc:forceRange:max = 4.099999904632568
+            uniform double mjc:forceRange:min = -4.099999904632568
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/left_arm_m8crank_plate>
+        }
+
+        def MjcActuator "right_arm_m8_actuator"
+        {
+            uniform double mjc:forceRange:max = 4.099999904632568
+            uniform double mjc:forceRange:min = -4.099999904632568
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/right_arm_m8>
+        }
+
+        def MjcActuator "right_arm_m8crank_plate_actuator"
+        {
+            uniform double mjc:forceRange:max = 4.099999904632568
+            uniform double mjc:forceRange:min = -4.099999904632568
+            custom rel mjc:target
+            append rel mjc:target = </arti_d1/Physics/right_arm_m8crank_plate>
+        }
+    }
+}
+
