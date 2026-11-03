@@ -1,12 +1,12 @@
 """ARTI-D1: URDF zero vs the real robot's servo zero ("real zero"), side by side in Meshcat.
 
-Real zero (user, 2026-11-03): the hip link (roll_to_pitch) is level, the leg is stretched out straight and points
-backward at 90 deg to the upper body (horizontal), and the sole is perpendicular to the ground. In URDF joint angles:
+Real zero (user, 2026-11-03): the hip link (roll_to_pitch) is level, the leg is stretched out straight and vertical,
+and the sole is flat on the ground. In URDF joint angles:
   hip_roll   = +/-0.15 rad   (the URDF hip_roll frame is rolled 0.15 rad inward; this cancels it)
-  hip_pitch  = HIP_PITCH     (thigh line hip_pitch -> knee horizontal, pointing backward)
+  hip_pitch  = HIP_PITCH     (thigh line hip_pitch -> knee vertical)
   knee       = KNEE          (shin line knee -> ankle in line with the thigh)
-  ankle      = ANKLE         (foot pitched 90 deg: sole vertical, facing backward; the foot link z axis is the sole
-                              normal, flat on the ground at the URDF stance pose hip_pitch + knee + ankle = 0)
+  ankle      = ANKLE         (sole flat: the foot link z axis is the sole normal, flat on the ground when
+                              hip_pitch + knee + ankle = 0)
 They come from the URDF link geometry (computed below), so they follow URDF edits.
 
     python scripts/view_real_zero.py                      # Meshcat (left: URDF zero, right: real zero)
@@ -30,7 +30,7 @@ def sagittal_angle(v):
     return math.atan2(-v[0], -v[2])
 
 
-def real_zero(robot, leg_deg=90.0, foot_deg=90.0):
+def real_zero(robot, leg_deg=0.0, foot_deg=0.0):
     """URDF joint angles of the real servo zero."""
     m = robot.model
     origin = lambda j: m.jointPlacements[m.getJointId(j)].translation
@@ -111,8 +111,8 @@ def render_png(robots, out):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--leg_deg", type=float, default=90.0, help="straight leg angle from down, + = backward (deg)")
-    ap.add_argument("--foot_deg", type=float, default=90.0, help="foot pitch, + = toes up / sole facing back (deg)")
+    ap.add_argument("--leg_deg", type=float, default=0.0, help="straight leg angle from down, + = backward (deg)")
+    ap.add_argument("--foot_deg", type=float, default=0.0, help="foot pitch, + = toes up / sole facing back (deg)")
     ap.add_argument("--png", type=str, default=None, help="save a side / front render instead of / besides Meshcat")
     ap.add_argument("--no-viewer", action="store_true")
     args = ap.parse_args()
