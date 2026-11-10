@@ -679,7 +679,7 @@ def main(args):
     episode["enable_cycle_offset_position"] = not is_stand
 
     # Load gait config
-    gait_config_file = f"../../config/{args.robot}/gait.json"
+    gait_config_file = f"../../config/{args.robot}/{getattr(args, 'gait_config', None) or 'gait.json'}"
     gait_config_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), gait_config_file)
 
     if not os.path.isfile(gait_config_file_path):
@@ -987,6 +987,8 @@ if __name__ == "__main__":
     parser.add_argument("--visual", type=_str_to_bool, default=True)
 
     parser.add_argument("--out_dir", type=str, default=None, help="Directory for <index>.json (default: data/<robot>)")
+
+    parser.add_argument("--gait_config", type=str, default=None, help="Gait file in config/<robot>/ (default: gait.json)")
 
     args = parser.parse_args()
 
